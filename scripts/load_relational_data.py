@@ -6,7 +6,7 @@ conn = psycopg2.connect("postgresql://neondb_owner:npg_YarpRPv27KLc@ep-cool-bonu
 cur = conn.cursor()
 
 # Load CSV
-df = pd.read_csv('c:/Users/Excel/Desktop/Github Projects/-Database---Prediction-Pipeline---Group-11/data/drug200.csv')
+df = pd.read_csv('c:/Users/Excel/Desktop/Github Projects/-Database---Prediction-Pipeline---Group-11/data/drug200.csv')  
 
 # Insert unique Sex values
 for sex in df['Sex'].dropna().unique():

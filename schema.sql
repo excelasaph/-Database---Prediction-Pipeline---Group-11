@@ -39,9 +39,6 @@ CREATE OR REPLACE PROCEDURE log_new_patient(patient_id INTEGER)
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    -- Example: Insert into a log table (create PatientLogs table if needed)
-    -- INSERT INTO PatientLogs (patient_id, log_time, action) VALUES (patient_id, NOW(), 'Patient created');
-    -- Or just do nothing
     NULL;
 END;
 $$;
