@@ -1,9 +1,22 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from pydantic import BaseModel
 from datetime import datetime
 
 from api.models.patient_models import PatientIn
 from api.db.postgres import get_pg_conn
 from api.db.mongo import get_mongo_db
+
+import joblib
+import os
+import numpy as np
+import pandas as pd
+from typing import Optional
+
+# For Keras model loading
+try:
+    from tensorflow.keras.models import load_model as keras_load_model
+except ImportError:
+    keras_load_model = None
 
 app = FastAPI()
 
@@ -41,6 +54,17 @@ def create_patient_pg(data: PatientIn):
         assignment_id = cur.fetchone()[0]
         conn.commit()
         return {"patient_id": patient_id, "assignment_id": assignment_id}
+
+# --- Latest Patient Endpoint (must be before /patients/{patient_id}) ---
+@app.get("/patients/latest")
+def get_latest_patient():
+    patient = fetch_latest_patient_pg()
+    if patient:
+        return patient
+    patient = fetch_latest_patient_mongo()
+    if patient:
+        return patient
+    raise HTTPException(status_code=404, detail="No patients found in either database.")
 
 @app.get("/patients/{patient_id}")
 def read_patient_pg(patient_id: int):
@@ -132,7 +156,7 @@ def read_patient_mongo(patient_id: int):
     patient = db.Patients.find_one({"patient_id": patient_id})
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
-    drug = db.DrugAssignments.find_one({"patient_id": patient_id})
+    drug = db.DrugAssignments.find_one({"patient_id": patient["patient_id"]})
     sex = db.Sexes.find_one({"sex_id": patient["sex_id"]})
     bp = db.BloodPressures.find_one({"bp_id": patient["bp_id"]})
     cholesterol = db.Cholesterols.find_one({"cholesterol_id": patient["cholesterol_id"]})
@@ -183,3 +207,127 @@ def delete_patient_mongo(patient_id: int):
     db.DrugAssignments.delete_many({"patient_id": patient_id})
     db.Patients.delete_one({"patient_id": patient_id})
     return {"detail": "Patient deleted"}
+
+# Utility: Fetch latest patient from PostgreSQL, fallback to MongoDB
+
+def fetch_latest_patient_pg():
+    try:
+        with get_pg_conn() as conn:
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT p.patient_id, p.age, s.sex_name, bp.bp_level, c.cholesterol_level, p.na_to_k, da.drug_type
+                FROM Patients p
+                JOIN Sexes s ON p.sex_id = s.sex_id
+                JOIN BloodPressures bp ON p.bp_id = bp.bp_id
+                JOIN Cholesterols c ON p.cholesterol_id = c.cholesterol_id
+                LEFT JOIN DrugAssignments da ON da.patient_id = p.patient_id
+                ORDER BY p.patient_id DESC LIMIT 1
+            """)
+            row = cur.fetchone()
+            if not row:
+                return None
+            return dict(zip(["patient_id", "age", "sex", "bp", "cholesterol", "na_to_k", "drug"], row))
+    except Exception:
+        return None
+
+def fetch_latest_patient_mongo():
+    try:
+        db = get_mongo_db()
+        patient = db.Patients.find_one(sort=[("patient_id", -1)])
+        if not patient:
+            return None
+        drug = db.DrugAssignments.find_one({"patient_id": patient["patient_id"]})
+        sex = db.Sexes.find_one({"sex_id": patient["sex_id"]})
+        bp = db.BloodPressures.find_one({"bp_id": patient["bp_id"]})
+        cholesterol = db.Cholesterols.find_one({"cholesterol_id": patient["cholesterol_id"]})
+        return {
+            "patient_id": patient["patient_id"],
+            "age": patient["age"],
+            "sex": sex["sex_name"] if sex else None,
+            "bp": bp["bp_level"] if bp else None,
+            "cholesterol": cholesterol["cholesterol_level"] if cholesterol else None,
+            "na_to_k": patient["na_to_k"],
+            "drug": drug["drug_type"] if drug else None
+        }
+    except Exception:
+        return None
+
+# --- Prediction Endpoint ---
+
+class PredictionRequest(BaseModel):
+    model_type: str
+
+@app.post("/predict")
+def predict_latest_patient(data: PredictionRequest):
+    model_type = data.model_type
+    
+    # Only allow neural network model
+    if model_type != "nn":
+        raise HTTPException(status_code=400, detail="Only 'nn' model type is supported. Please use 'nn'.")
+    
+    # Load preprocessor
+    preproc_path = os.path.join(os.path.dirname(__file__), "..", "encoders", "preprocessor.pkl")
+    preproc_path = os.path.abspath(preproc_path)
+    if not os.path.exists(preproc_path):
+        raise HTTPException(status_code=500, detail=f"Preprocessor file not found at: {preproc_path}")
+    preprocessor = joblib.load(preproc_path)
+    
+    # Load neural network model
+    model_path = os.path.join(os.path.dirname(__file__), "..", "models", "saved_models", "model_nn_optimized.keras")
+    model_path = os.path.abspath(model_path)
+    if not os.path.exists(model_path):
+        raise HTTPException(status_code=500, detail=f"Neural network model file not found at: {model_path}")
+    
+    if keras_load_model is None:
+        raise HTTPException(status_code=500, detail="TensorFlow/Keras not installed.")
+    model = keras_load_model(model_path)
+    
+    # Fetch latest patient
+    patient = fetch_latest_patient_pg()
+    db_used = "postgresql"
+    if not patient:
+        patient = fetch_latest_patient_mongo()
+        db_used = "mongodb"
+    if not patient:
+        raise HTTPException(status_code=404, detail="No patients found in either database.")
+    
+    # Prepare data for prediction
+    features = ["Age", "Sex", "BP", "Cholesterol", "Na_to_K"]
+    X = pd.DataFrame([{
+        "Age": patient["age"],
+        "Sex": patient["sex"],
+        "BP": patient["bp"],
+        "Cholesterol": patient["cholesterol"],
+        "Na_to_K": patient["na_to_k"]
+    }])
+    
+    try:
+        X_proc = preprocessor.transform(X)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Preprocessing failed: {str(e)}")
+    
+    # Predict using neural network
+    try:
+        pred = model.predict(X_proc)
+        pred_label = np.argmax(pred, axis=1)[0]
+        
+        # Map prediction index to drug name
+        drug_mapping = {0: "DrugY", 1: "drugA", 2: "drugB", 3: "drugC", 4: "drugX"}
+        pred_drug = drug_mapping.get(pred_label, f"Unknown_{pred_label}")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+    
+    return {
+        "db_used": db_used,
+        "model_type": model_type,
+        "prediction": pred_drug,
+        "actual": patient["drug"],
+        "patient_features": {
+            "age": patient["age"],
+            "sex": patient["sex"],
+            "bp": patient["bp"],
+            "cholesterol": patient["cholesterol"],
+            "na_to_k": patient["na_to_k"]
+        }
+    }
