@@ -182,10 +182,10 @@ model = Sequential([
 - Conducted detailed review of Python scripts involved in the drug prediction pipeline.
 - Ensured consistent formatting, meaningful function names, and modular logic.
 - Verified that requests and responses in the API were handled using clear, fail-safe conditions.
--C onfirmed all scripts followed PEP 8 standards and project naming conventions.
+- Confirmed all scripts followed PEP 8 standards and project naming conventions.
 
 **Integration Testing:**
--T ested full pipeline execution including:
+- Tested full pipeline execution including:
   - API availability (/docs)
   - Fetching the latest patient
   - Making predictions with model type "nn"
