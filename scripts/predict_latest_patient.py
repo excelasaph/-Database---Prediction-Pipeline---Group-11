@@ -104,6 +104,7 @@ def display_results(patient, prediction_result):
     
     print("="*60)
 
+
 def main():
     """Main function to orchestrate the prediction process"""
     print("Starting Drug Prediction Pipeline")
