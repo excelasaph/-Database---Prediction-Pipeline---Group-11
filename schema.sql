@@ -29,6 +29,16 @@ CREATE TABLE DrugAssignments (
     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE PredictionLogs (
+    log_id SERIAL PRIMARY KEY,
+    patient_id INTEGER REFERENCES Patients(patient_id),
+    predicted_drug VARCHAR(10) NOT NULL,
+    model_type VARCHAR(20) NOT NULL,
+    prediction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    actual_drug VARCHAR(10),
+    prediction_success BOOLEAN
+);
+
 -- Drop the trigger and function with CASCADE
 DROP TRIGGER IF EXISTS patient_insert_trigger ON Patients;
 DROP FUNCTION IF EXISTS log_new_patient_trigger() CASCADE;
