@@ -38,6 +38,7 @@ This project implements a complete drug classification system that predicts the 
 - **BloodPressures**: Blood pressure levels lookup
 - **Cholesterols**: Cholesterol levels lookup
 - **DrugAssignments**: Drug prescriptions with timestamps
+- **PredictionLogs**: Stores prediction results, patient reference, model used, predicted drug, confidence, and timestamp
 
 ### MongoDB Collections
 - **Patients**: Patient documents with embedded references
@@ -45,6 +46,7 @@ This project implements a complete drug classification system that predicts the 
 - **BloodPressures**: Blood pressure collection
 - **Cholesterols**: Cholesterol collection
 - **DrugAssignments**: Drug assignment documents
+- **PredictionLogs**: Stores prediction logs with patient reference, model, prediction, confidence, and timestamp
 
 ## Quick Start
 
@@ -107,6 +109,9 @@ http://localhost:8000
 #### Prediction
 - `POST /predict` - Make a drug prediction for the latest patient
 
+#### Prediction Logging
+- `POST /prediction-logs/` - Log a prediction result for a patient
+
 ### Example API Usage
 
 #### Create a Patient
@@ -130,6 +135,19 @@ curl -X POST "http://localhost:8000/predict" \
   -d '{"model_type": "nn"}'
 ```
 
+#### Log a Prediction
+```bash
+curl -X POST "http://localhost:8000/prediction-logs/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "patient_id": 123,
+    "model_used": "neural_network",
+    "predicted_drug": "DrugY",
+    "confidence": 0.87,
+    "source": "postgres"
+  }'
+```
+
 ## Machine Learning Pipeline
 
 ### Model Training
@@ -151,6 +169,7 @@ The project includes a comprehensive Jupyter notebook (`models/models_training.i
 2. **Preprocessing**: Applies trained preprocessor to input data
 3. **Prediction**: Uses neural network model for drug classification
 4. **Result Display**: Shows prediction with confidence metrics
+5. **Prediction Logging**: After making a prediction, the result is automatically logged in the `PredictionLogs` table (PostgreSQL) or collection (MongoDB), including patient reference, model used, predicted drug, confidence, and timestamp.
 
 ## Project Structure
 
@@ -161,7 +180,8 @@ The project includes a comprehensive Jupyter notebook (`models/models_training.i
 │   │   ├── postgres.py          
 │   │   └── mongo.py             
 │   └── models/                   
-│       └── patient_models.py    
+│       ├── patient_models.py    
+│       └── prediction_log_models.py
 ├── data/                         
 │   └── drug200.csv              
 ├── models/                       
