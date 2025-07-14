@@ -68,6 +68,7 @@ def make_prediction():
     except Exception as e:
         print(f"Error making prediction: {e}")
         return None
+    
 
 def display_results(patient, prediction_result):
     """Display the results in a formatted way"""
