@@ -21,6 +21,7 @@ def test_api_connection():
     except Exception as e:
         print(f"Error testing API connection: {e}")
         return False
+    
 
 def fetch_latest_patient():
     """Fetch the latest patient using the API endpoint"""
