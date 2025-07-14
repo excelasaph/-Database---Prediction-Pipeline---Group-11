@@ -179,22 +179,25 @@ model = Sequential([
 #### Task 4: Quality Assurance & Integration
 
 **Code Review & Standards:**
-- Performed comprehensive code review across all modules
-- Ensured adherence to coding standards and best practices
-- Verified database schema compliance with requirements
-- Validated API endpoint functionality and error handling
+-Conducted detailed review of Python scripts involved in the drug prediction pipeline.
+-Ensured consistent formatting, meaningful function names, and modular logic.
+-Verified that requests and responses in the API were handled using clear, fail-safe conditions.
+-Confirmed all scripts followed PEP 8 standards and project naming conventions.
 
 **Integration Testing:**
-- Tested end-to-end prediction pipeline
-- Verified database connectivity and fallback mechanisms
-- Ensured proper error handling across all components
-- Validated machine learning model integration
+-Tested full pipeline execution including:
+  -API availability (/docs)
+  -Fetching the latest patient
+  -Making predictions with model type "nn"
+  -Displaying formatted prediction results
+-Confirmed the API handles errors (connection failures, 404s, etc.) gracefully.
+-Validated MongoDB collection structure and schema via automated validation scripts.
 
 **Quality Assurance Achievements:**
-- Verified 3NF normalization compliance
-- Ensured proper stored procedure and trigger implementation
-- Validated CRUD operation functionality
-- Confirmed prediction accuracy and reliability
+-Ensured reliable patient-fetch and prediction workflows under various scenarios.
+-Verified robustness of exception handling and fallback mechanisms.
+-Confirmed display output matches expected format and highlights prediction correctness.
+-Validated MongoDB data integrity with custom collection validation scripts.
 
 **Commit History:**
 - 3+ commits focused on quality assurance
