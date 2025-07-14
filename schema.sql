@@ -22,21 +22,9 @@ CREATE TABLE Patients (
     na_to_k FLOAT NOT NULL CHECK (na_to_k >= 6.0 AND na_to_k <= 40.0)
 );
 
-CREATE TABLE DrugAssignments (
-    assignment_id SERIAL PRIMARY KEY,
-    patient_id INTEGER REFERENCES Patients(patient_id),
-    drug_type VARCHAR(10) NOT NULL CHECK (drug_type IN ('DrugY', 'drugX', 'drugA', 'drugB', 'drugC')),
-    assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE PredictionLogs (
-    log_id SERIAL PRIMARY KEY,
-    patient_id INTEGER REFERENCES Patients(patient_id),
-    predicted_drug VARCHAR(10) NOT NULL,
-    model_type VARCHAR(20) NOT NULL,
-    prediction_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    actual_drug VARCHAR(10),
-    prediction_success BOOLEAN
+CREATE TABLE BloodPressures (
+    bp_id SERIAL PRIMARY KEY,
+    bp_level VARCHAR(10) NOT NULL CHECK (bp_level IN ('HIGH', 'NORMAL', 'LOW'))
 );
 
 -- Drop the trigger and function with CASCADE
