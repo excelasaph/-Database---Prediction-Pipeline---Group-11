@@ -332,3 +332,41 @@ def predict_latest_patient(data: PredictionRequest):
             "na_to_k": patient["na_to_k"]
         }
     }
+
+@app.post("/prediction-logs/", status_code=201)
+def create_prediction_log(log: PredictionLogIn):
+    if log.db_used == "postgresql":
+        with get_pg_conn() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                """
+                INSERT INTO PredictionLogs (patient_id, predicted_drug, model_type, prediction_time, actual_drug, prediction_success)
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING log_id
+                """,
+                (
+                    log.patient_id,
+                    log.predicted_drug,
+                    log.model_type,
+                    log.prediction_time or datetime.now(),
+                    log.actual_drug,
+                    log.prediction_success
+                )
+            )
+            log_id = cur.fetchone()[0]
+            conn.commit()
+        return {"log_id": log_id, "db_used": "postgresql"}
+    elif log.db_used == "mongodb":
+        db = get_mongo_db()
+        doc = {
+            "patient_id": log.patient_id,
+            "predicted_drug": log.predicted_drug,
+            "model_type": log.model_type,
+            "prediction_time": log.prediction_time or datetime.utcnow(),
+            "actual_drug": log.actual_drug,
+            "prediction_success": log.prediction_success
+        }
+        result = db.PredictionLogs.insert_one(doc)
+        return {"log_id": str(result.inserted_id), "db_used": "mongodb"}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid db_used. Must be 'postgresql' or 'mongodb'.")
