@@ -151,27 +151,25 @@ model = Sequential([
 
 #### Task 4: Quality Assurance & Documentation
 
-**Documentation Development:**
-- Created comprehensive project documentation
-- Developed API usage examples and tutorials
-- Wrote technical specifications and deployment guides
-- Maintained code documentation standards
+**Schema & Endpoint Development:**
+- Designed PredictionLogIn schema to handle prediction logging input
+- Implemented /prediction-logs/ POST endpoint
+- Enabled support for both PostgreSQL and MongoDB backends
 
-**Testing Implementation:**
-- Developed test cases for API endpoints
-- Created validation procedures for data integrity
-- Implemented error handling verification
-- Ensured cross-database compatibility testing
+**Debugging & Error Handling:**
+- Fixed issues with DB insert logic
+- Improved timestamp handling across databases
+- Added validation for db_used field
+- Ensured clear and consistent error responses
 
 **Technical Contributions:**
-- Assisted with API endpoint validation
-- Created user documentation and guides
-- Implemented testing procedures for prediction pipeline
-- Ensured code quality and maintainability
+- Integrated dual-DB logging system for predictions
+- Verified schema consistency and DB compatibility
+- Handled conditional DB routing logic (db_used field)
 
 **Commit History:**
 - 4+ commits focused on documentation and testing
-- Clear documentation of testing procedures
+- Ensured clean commit messages with clear intent
 - Maintained code quality standards
 
 ---
