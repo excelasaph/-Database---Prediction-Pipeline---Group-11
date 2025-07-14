@@ -68,6 +68,27 @@ def make_prediction():
     except Exception as e:
         print(f"Error making prediction: {e}")
         return None
+
+def log_prediction(patient, prediction_result):
+    """Log the prediction to the API's /prediction-logs/ endpoint"""
+    log_data = {
+        "patient_id": patient["patient_id"],
+        "predicted_drug": prediction_result["prediction"],
+        "model_type": prediction_result["model_type"],
+        "prediction_time": None,  # Let server use default
+        "actual_drug": prediction_result["actual"],
+        "prediction_success": prediction_result["prediction"] == prediction_result["actual"],
+        "db_used": prediction_result["db_used"]
+    }
+    response = requests.post(
+        f"{API_BASE_URL}/prediction-logs/",
+        json=log_data,
+        headers={"Content-Type": "application/json"}
+    )
+    if response.status_code == 201:
+        print("Prediction log created successfully.")
+    else:
+        print(f"Failed to log prediction: {response.status_code} {response.text}")
     
 
 def display_results(patient, prediction_result):
@@ -129,8 +150,12 @@ def main():
         print("Prediction failed")
         return
     
-    # Step 4: Display results
-    print("\n4. Displaying results...")
+    # Step 4: Log prediction before displaying results
+    print("\n4. Logging prediction...")
+    log_prediction(patient, prediction_result)
+    
+    # Step 5: Display results
+    print("\n5. Displaying results...")
     display_results(patient, prediction_result)
     
     print("\nPrediction pipeline completed successfully!")
