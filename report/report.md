@@ -27,10 +27,10 @@ This report details the comprehensive implementation of a drug classification pr
 #### Task 1: Database Implementation (PostgreSQL & MongoDB)
 
 **Database Schema Design:**
-- Designed a comprehensive 5-table normalized schema following 3NF
-- Implemented proper primary and foreign key relationships
+- Designed a 5-table normalized schema following 3NF
+- Implemented primary and foreign key relationships
 - Created data validation constraints for all fields
-- Designed ERD diagram using professional tools
+- Designed ERD diagram using pgadmin functionality
 
 **PostgreSQL Implementation:**
 ```sql
@@ -48,7 +48,7 @@ CREATE TABLE Patients (
 **Stored Procedure & Trigger Implementation:**
 - Created `log_new_patient` stored procedure for automated logging
 - Implemented `patient_insert_trigger` trigger for automatic procedure execution
-- Ensured proper error handling and transaction management
+- Ensured error handling and transaction management
 
 **MongoDB Implementation:**
 - Designed equivalent collections in MongoDB
@@ -58,10 +58,10 @@ CREATE TABLE Patients (
 #### Task 2: FastAPI Development
 
 **API Architecture:**
-- Implemented comprehensive CRUD operations for both databases
+- Implemented CRUD operations for both databases
 - Created dual database support with automatic fallback
-- Added robust input validation using Pydantic models
-- Implemented proper error handling and HTTP status codes
+- Added input validation using Pydantic models
+- Implemented error handling and HTTP status codes
 
 **Key Endpoints Developed:**
 ```python
@@ -84,14 +84,13 @@ CREATE TABLE Patients (
 
 **Technical Achievements:**
 - Implemented automatic database fallback (PostgreSQL → MongoDB)
-- Created comprehensive input validation with Pydantic
+- Created input validation with Pydantic
 - Added proper error handling for all edge cases
 - Ensured API documentation with automatic OpenAPI generation
 
 **Commit History:**
-- 6+ commits with clear, descriptive messages
+- 11+ commits with clear, descriptive messages
 - Focused on database design and API implementation
-- Maintained code quality and documentation standards
 
 ---
 
@@ -137,23 +136,22 @@ model = Sequential([
 **Technical Achievements:**
 - Achieved 97.5% validation accuracy with Gradient Boosting
 - Implemented proper train/validation/test splits (60:20:20)
-- Created comprehensive model evaluation metrics
+- Created model evaluation metrics
 - Developed automated model saving and loading procedures
 
 **Commit History:**
 - 5+ commits focused on ML pipeline development
 - Clear documentation of model training procedures
-- Maintained reproducibility with proper random seeds
 
 ---
 
-### 3. Chance Karambizi - Documentation & Testing
+### 3. Chance Karambizi - Prediction Logs Endpoint
 
-#### Task 4: Quality Assurance & Documentation
+#### Task 4: Prediction Logs Handling
 
 **Schema & Endpoint Development:**
-- Designed PredictionLogIn schema to handle prediction logging input
-- Implemented /prediction-logs/ POST endpoint
+- Designed PredictionLogs schema to handle prediction logging input
+- Implemented /predictionlogs/ POST endpoint
 - Enabled support for both PostgreSQL and MongoDB backends
 
 **Debugging & Error Handling:**
@@ -168,15 +166,14 @@ model = Sequential([
 - Handled conditional DB routing logic (db_used field)
 
 **Commit History:**
-- 4+ commits focused on documentation and testing
-- Ensured clean commit messages with clear intent
+- 5+ commits focused on documentation
 - Maintained code quality standards
 
 ---
 
-### 4. Diana Ruzindana - Quality Assurance
+### 4. Diana Ruzindana - Pipeline Validation & Latest Entry Endpoint
 
-#### Task 4: Quality Assurance & Integration
+#### Task 4: Fetching Data and Validation Scripts
 
 **Code Review & Standards:**
 - Conducted detailed review of Python scripts involved in the drug prediction pipeline.
@@ -201,9 +198,8 @@ model = Sequential([
 - Validated MongoDB data integrity with custom collection validation scripts.
 
 **Commit History:**
-- 3+ commits focused on quality assurance
+- 5+ commits focused on API endpoint handling
 - Clear documentation of testing procedures
-- Maintained project standards and requirements compliance
 
 ---
 
@@ -212,6 +208,6 @@ model = Sequential([
 **Repository**: [https://github.com/excelasaph/-Database---Prediction-Pipeline---Group-11](https://github.com/excelasaph/-Database---Prediction-Pipeline---Group-11)   
 **Main Branch**: main  
 **Contributors**: 4 team members  
-**Total Commits**: 18+ commits  
+**Total Commits**: 30+ commits  
 **Languages**: Python, SQL, Markdown  
 **Technologies**: FastAPI, PostgreSQL, MongoDB, TensorFlow, scikit-learn
