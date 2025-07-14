@@ -142,4 +142,6 @@ if __name__ == "__main__":
         print("\n\nScript interrupted by user")
     except Exception as e:
         print(f"\nUnexpected error: {e}")
-        print("Please check your API server and try again.") 
+        print("Please check your API server and try again.")
+
+    
