@@ -114,6 +114,7 @@ def delete_patient_pg(patient_id: int):
         if not cur.fetchone():
             raise HTTPException(status_code=404, detail="Patient not found")
         cur.execute("DELETE FROM DrugAssignments WHERE patient_id = %s", (patient_id,))
+        cur.execute("DELETE FROM PredictionLogs WHERE patient_id = %s", (patient_id,))
         cur.execute("DELETE FROM Patients WHERE patient_id = %s", (patient_id,))
         conn.commit()
         return {"detail": "Patient deleted"}
