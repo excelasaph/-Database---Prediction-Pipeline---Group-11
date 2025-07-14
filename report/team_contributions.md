@@ -179,25 +179,26 @@ model = Sequential([
 #### Task 4: Quality Assurance & Integration
 
 **Code Review & Standards:**
--Conducted detailed review of Python scripts involved in the drug prediction pipeline.
--Ensured consistent formatting, meaningful function names, and modular logic.
--Verified that requests and responses in the API were handled using clear, fail-safe conditions.
--Confirmed all scripts followed PEP 8 standards and project naming conventions.
+- Conducted detailed review of Python scripts involved in the drug prediction pipeline.
+- Ensured consistent formatting, meaningful function names, and modular logic.
+- Verified that requests and responses in the API were handled using clear, fail-safe conditions.
+-C onfirmed all scripts followed PEP 8 standards and project naming conventions.
 
 **Integration Testing:**
--Tested full pipeline execution including:
-  -API availability (/docs)
-  -Fetching the latest patient
-  -Making predictions with model type "nn"
-  -Displaying formatted prediction results
--Confirmed the API handles errors (connection failures, 404s, etc.) gracefully.
--Validated MongoDB collection structure and schema via automated validation scripts.
+-T ested full pipeline execution including:
+  - API availability (/docs)
+  - Fetching the latest patient
+  - Making predictions with model type "nn"
+  - Displaying formatted prediction results
+  
+- Confirmed the API handles errors (connection failures, 404s, etc.) gracefully.
+- Validated MongoDB collection structure and schema via automated validation scripts.
 
 **Quality Assurance Achievements:**
--Ensured reliable patient-fetch and prediction workflows under various scenarios.
--Verified robustness of exception handling and fallback mechanisms.
--Confirmed display output matches expected format and highlights prediction correctness.
--Validated MongoDB data integrity with custom collection validation scripts.
+- Ensured reliable patient-fetch and prediction workflows under various scenarios.
+- Verified robustness of exception handling and fallback mechanisms.
+- Confirmed display output matches expected format and highlights prediction correctness.
+- Validated MongoDB data integrity with custom collection validation scripts.
 
 **Commit History:**
 - 3+ commits focused on quality assurance
